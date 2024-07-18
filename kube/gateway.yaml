@@ -19,34 +19,35 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: vs-service
+  namespace: default
 spec:
   hosts:
     - "*"
   gateways:
     - service-gateway
   http:
-    - match:
-        - uri:
-            exact: /auth
-          route:
-            - destination:
-                host: auth-service-svc.default.svc.cluster.local
-                port:
-                  number: 3000
-    - match:
-        - uri:
-            exact: /validate
-          route:
-            - destination:
-                host: auth-service-svc.default.svc.cluster.local
-                port:
-                  number: 3000
-    - match:
-       - uri:
-           prefix: /api
-         route:
-           - destination:
-              host: api-service-svc.default.svc.cluster.local
-              port:
-                number: 3000
+  - match:
+    - uri:
+        exact: /auth
+    route:
+    - destination:
+        host: auth-service.default.svc.cluster.local
+        port:
+          number: 3000
+  - match:
+    - uri:
+        exact: /validate
+    route:
+    - destination:
+        host: auth-service.default.svc.cluster.local
+        port:
+          number: 3000
+  - match:
+    - uri:
+        prefix: /api
+    route:
+    - destination:
+        host: api-service.default.svc.cluster.local
+        port:
+          number: 3000
 
