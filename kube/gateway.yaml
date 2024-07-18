@@ -1,0 +1,52 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: service-gateway
+spec:
+  # The selector matches the ingress gateway pod labels.
+  # If you installed Istio using Helm following the standard documentation, this would be "istio=ingress"
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 8080
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vs-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - service-gateway
+  http:
+    - match:
+        - uri:
+            exact: /auth
+          route:
+            - destination:
+                host: auth-service-svc.default.svc.cluster.local
+                port:
+                  number: 3000
+    - match:
+        - uri:
+            exact: /validate
+          route:
+            - destination:
+                host: auth-service-svc.default.svc.cluster.local
+                port:
+                  number: 3000
+    - match:
+       - uri:
+           prefix: /api
+         route:
+           - destination:
+              host: api-service-svc.default.svc.cluster.local
+              port:
+                number: 3000
+
